@@ -1,0 +1,64 @@
+html{
+  box-sizing:border-box;
+  font-family:"Times New Roman", Times, serif;
+  color:var(--dark);
+}
+
+body{
+  margin:0;
+}
+
+div.App{
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction:row;
+  justify-content: center;
+  align-items:center;
+  overflow: hidden;
+}
+
+header{
+  z-index: 1;
+  display: flex;
+  flex-direction:column;
+  justify-content: center;
+  align-items:center;
+}
+header h1{
+  position: relative;
+  text-align: center;
+  font-size: 3rem;
+  background: #fff;
+  padding: 2rem;
+  margin: 1.5rem;
+  opacity: 0.7;
+}
+
+div.video-container{
+  position: absolute;
+  left:0;
+  width: 100%;
+  z-index: 0;
+}
+
+div.color-overlay{
+  position:absolute;
+  left:0;
+  background-color: black;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+
+}
+
+header > button{
+  background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
