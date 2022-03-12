@@ -1,0 +1,6 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# ignore additional files using core.excludesFile
+# https://git-scm.com/docs/gitignore
