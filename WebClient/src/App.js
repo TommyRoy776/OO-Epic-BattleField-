@@ -2,6 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import bgVideo from './video/bgVideo.mp4'
 import awp from './image/awp.png'
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3001"); //connect to server
 
 function App() {
   return (
