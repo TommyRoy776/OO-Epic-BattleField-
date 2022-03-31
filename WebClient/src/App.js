@@ -3,18 +3,20 @@ import './App.css';
 import bgVideo from './video/bgVideo.mp4'
 import awp from './image/awp.png'
 import io from "socket.io-client";
+import {useState} from "react";
+import Entry from './components/entry';
+import Chat from './components/chat';
+import {BrowserRouter as Router,Routes,Route} from 'react-router-dom';
 
-const socket = io.connect("http://localhost:3001"); //connect to server
 
 function App() {
   return (
+  <Router>
     <div className="App">
-      <header>
-        <h1>OO Epic BattleField</h1>
-        <button>
-          <img src={awp}/>
-      </button>
-      </header>
+      <Routes>
+        <Route exact path='/' element={<Entry/>}></Route>
+        <Route exact path='/chat' element={<Chat/>}></Route>
+      </Routes>
       <div className="video-container">
         <div className="color-overlay"></div>
         <video autoPlay loop muted>
@@ -22,6 +24,7 @@ function App() {
         </video>
       </div>
     </div>
+    </Router>
   );
 }
 

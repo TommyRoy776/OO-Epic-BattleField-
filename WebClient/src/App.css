@@ -62,3 +62,7 @@ header > button{
 	cursor: pointer;
 	outline: inherit;
 }
+
+div.chat-container{
+  z-index:1 ;
+}
