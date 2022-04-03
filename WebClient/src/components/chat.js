@@ -40,7 +40,7 @@ function Chat({ username, Socket }) {
             </audio>
             <div className="chat-window">
                 <div className="chat-header">
-                    <p>OO Chat Room</p>
+                    <p>Chat room: {username}</p>
                 </div>
                 <div className="chat-body">
                     {messageList.map((messageContent) => {
@@ -65,6 +65,7 @@ function Chat({ username, Socket }) {
                 <div className="chat-footer">
                     <input
                         type="text"
+                        value = {currentMessage}
                         placeholder="Type something nice..."
                         onChange={(e) => {
                             setCurrentMessage(e.target.value);

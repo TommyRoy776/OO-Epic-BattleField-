@@ -19,7 +19,7 @@ function Entry({Socket,username,setUsername}) {
       <input type="text" placeholder='username' onChange={
         (e) => {
           setUsername(e.target.value);
-          console.log(username);
+         // console.log(username);
         }} />
         <Link to = "/chat"  onClick={joinChat}>
           <img src={awp} />

@@ -21,7 +21,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route exact path='/' element={<Entry Socket={socket} username={username} setUsername={setUsername}/>}></Route>
-        <Route exact path='/chat' element={<Chat username="" Socket={socket} />}></Route>
+        <Route exact path='/chat' element={<Chat username={username} Socket={socket} />}></Route>
       </Routes>
       <div className="video-container">
         <div className="color-overlay"></div>
