@@ -20,7 +20,7 @@ function Chat({ username, Socket }) {
                     new Date(Date.now()).getMinutes(),
             };
 
-            await Socket.emit("send_message", messageData);
+            await Socket.emit("send_message", messageData); //wait for socket finished transmission
             setMessageList((list) => [...list, messageData]);
             setCurrentMessage("");
         }
@@ -30,7 +30,7 @@ function Chat({ username, Socket }) {
         Socket.on("receive_message", (data) => {
             setMessageList((list) => [...list, data]);
         });
-    }, [Socket]);
+    }, [Socket]); //listen to Socket change 
 
     return (
         <React.Fragment>
