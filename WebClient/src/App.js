@@ -6,7 +6,9 @@ import io from "socket.io-client";
 import Entry from './components/entry';
 import Chat from './components/chat';
 import bgm from './music/theme.mp3'
+import Game from './components/game'
 import {BrowserRouter as Router,Routes,Route} from 'react-router-dom';
+
 
 import React, {useState,useEffect} from "react";
 
@@ -22,13 +24,8 @@ function App() {
       <Routes>
         <Route exact path='/' element={<Entry Socket={socket} username={username} setUsername={setUsername}/>}></Route>
         <Route exact path='/chat' element={<Chat username={username} Socket={socket} />}></Route>
+        <Route exact path='/game' element={<Game/>}></Route>
       </Routes>
-      <div className="video-container">
-        <div className="color-overlay"></div>
-        <video autoPlay loop muted>
-          <source src={bgVideo} type="video/mp4" />
-        </video>
-      </div>
     </div>
     </Router>
   );
