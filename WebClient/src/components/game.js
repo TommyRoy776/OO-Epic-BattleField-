@@ -9,19 +9,25 @@ class Player{
     constructor(){
        this.x=0
        this.y=0
+       this.image = new Image();
     }
     create(){
-        let img = new Image();
+        let img = this.image;
         let canvas = document.getElementById('canvas')
         let ctx = canvas.getContext('2d');
          img.src = TeamA; 
          img.onload = function() {
-            ctx.drawImage(img,0, canvas.height/2,80,80);
+            ctx.drawImage(img,0, window.innerHeight/2,80,80);
             
         };
         this.x = 0;
         this.y = window.innerHeight/2;
-      
+    }
+
+    draw(){
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d');
+        ctx.drawImage(this.img,0, window.innerHeight/2,80,80);
     }
  
 }
@@ -53,18 +59,18 @@ class Bullet{
 function Game({charcter}){
     
     const [player,setPlayer] = useState({});
-    const [bullet,setBullet] = useState([]);
-    const canvas = document.getElementById('canvas')
-  
-
+    //const [bullet,setBullet] = useState([]);
+    const bullet = useRef([]);
+    const playerRef = useRef(null);
+   
     const animate = () =>{
-        
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
         requestAnimationFrame(animate);
-       // console.log('go')
-        /*thebullet.draw();
-        thebullet.update();*/
-        //console.log(bullet)
-        bullet.forEach((bul) => {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        //fillCanvas();
+        playerRef.current.draw();
+        bullet.current.forEach((bul) => {
           bul.update();
          
         })
@@ -77,28 +83,19 @@ function Game({charcter}){
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    const shoot = (e) =>{
-        
-        console.log(player)
-        const x = e.clientX 
-        const y = e.clientY 
-       
-    }
-    
-    const listener = (e) =>{
-        shoot(e) 
-     }
-
      const bulletlistener = (e) =>{
-         const theX = player.x+72;
-         const theY =  player.y+60;
-         const angle = Math.atan2(e.clientY - player.y,e.clientX - player.x)
+         const theX = playerRef.current.x+72;
+         const theY =  playerRef.current.y+60;
+         const angle = Math.atan2(e.clientY - theY,e.clientX - theX)
          console.log(angle)
          const velocity = {
              x:Math.cos(angle),
              y:Math.sin(angle)
          }
-        setBullet((prev) => [...prev,new Bullet(theX,theY,4,velocity)])
+       // setBullet((prev) => [...prev,new Bullet(theX,theY,4,velocity)])
+        console.log(bullet.current);
+         bullet.current = [...bullet.current,new Bullet(theX,theY,4,velocity)];
+        
      }
 
 
@@ -106,13 +103,16 @@ function Game({charcter}){
          const Theplayer = new Player(); 
          Theplayer.create();
          setPlayer(Theplayer);
+         playerRef.current =  Theplayer
          //const thebullet = new Bullet(Theplayer.x,Theplayer.y,4,{x:1,y:1});
          const canvas = document.getElementById('canvas')
          canvas.width = window.innerWidth;
          canvas.height = window.innerHeight;
          //setBullet(pre => [...pre,thebullet]);
+         canvas.addEventListener("click", bulletlistener);
          fillCanvas();
-    
+         //animate();
+        
 
     },[])
     
@@ -122,19 +122,19 @@ function Game({charcter}){
       }, [player,bullet]);*/
       
 
-useEffect(() => {
+/*useEffect(() => {
       const canvas = document.getElementById('canvas')
       canvas.addEventListener("click", listener);
       return () => canvas.removeEventListener("click", listener);
-    },[player])
+    },[player])*/
    
-    useEffect(() => {
+    /*useEffect(() => {
         const canvas = document.getElementById('canvas')
         canvas.addEventListener("click", bulletlistener);
         return () => canvas.removeEventListener("click", bulletlistener);
-      },[bullet,player])
+      },[bullet,player])*/
    
-    animate();
+  
     return( 
     <canvas id="canvas">
      
