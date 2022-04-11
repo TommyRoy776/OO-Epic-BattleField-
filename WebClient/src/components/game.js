@@ -10,6 +10,7 @@ class Player{
        this.x=0
        this.y=0
        this.image = new Image();
+       this.position = {x:0,y:window.innerHeight/2}
     }
     create(){
         let img = this.image;
@@ -27,7 +28,7 @@ class Player{
     draw(){
         let canvas = document.getElementById('canvas')
         let ctx = canvas.getContext('2d');
-        ctx.drawImage(this.img,0, window.innerHeight/2,80,80);
+        ctx.drawImage(this.image,0, window.innerHeight/2,80,80);
     }
  
 }
@@ -68,7 +69,7 @@ function Game({charcter}){
         const ctx = canvas.getContext('2d');
         requestAnimationFrame(animate);
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        //fillCanvas();
+        fillCanvas();
         playerRef.current.draw();
         bullet.current.forEach((bul) => {
           bul.update();
@@ -111,7 +112,7 @@ function Game({charcter}){
          //setBullet(pre => [...pre,thebullet]);
          canvas.addEventListener("click", bulletlistener);
          fillCanvas();
-         //animate();
+         animate();
         
 
     },[])
