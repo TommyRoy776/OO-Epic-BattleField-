@@ -22,7 +22,7 @@ function Entry({Socket,username,setUsername}) {
           setUsername(e.target.value);
          // console.log(username);
         }} />
-        <Link to = {/*username !== "" ? "/chat": "/"*/  username !== "" ? "/game": "/"}  onClick={joinChat}>
+        <Link to = { username !== "" ? "/game": "/"}  onClick={joinChat}>
           <img src={awp} />
         </Link>
         

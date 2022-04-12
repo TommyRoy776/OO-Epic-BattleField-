@@ -29,7 +29,19 @@ class Player{
     draw(){
         let canvas = document.getElementById('canvas')
         let ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.translate(
+            this.position.x + this.size/2,
+            this.position.y + this.size/2
+        );
+        ctx.rotate(this.rotate)
+        ctx.translate(
+            -this.position.x - this.size/2,
+            -this.position.y - this.size/2
+        );
+
         ctx.drawImage(this.image,this.position.x, this.position.y,80,80);
+        ctx.restore();
     }
 
     update(){
@@ -88,12 +100,15 @@ function Game({charcter}){
         if(keys.current.w.pressed && playerRef.current.position.y >= 0){
             console.log(playerRef.current.position.y)
             playerRef.current.velocity.y = -2;
+            //playerRef.current.rotate = -0.15;
         }else if(keys.current.s.pressed && playerRef.current.position.y+playerRef.current.size <= canvas.height){
             console.log(playerRef.current.position.y)
             console.log(`canvas ${canvas.height}`);
             playerRef.current.velocity.y = 2;
+            //playerRef.current.rotate = 0.15;
         }else{
             playerRef.current.velocity.y = 0;
+           // playerRef.current.rotate = 0;
         }
         bullet.current.forEach((bul) => {
           bul.update();
@@ -117,7 +132,6 @@ function Game({charcter}){
              x:Math.cos(angle),
              y:Math.sin(angle)
          }
-       // setBullet((prev) => [...prev,new Bullet(theX,theY,4,velocity)])
         console.log(bullet.current);
          bullet.current = [...bullet.current,new Bullet(theX,theY,4,velocity)];
         
@@ -132,6 +146,14 @@ function Game({charcter}){
             keys.current.s.pressed = true;
               break;
         }
+     }
+
+     const rotation = (e) =>{
+        const theX = playerRef.current.position.x+72;
+        const theY =  playerRef.current.position.y+60;
+        const angle = Math.atan2(e.clientY - theY,e.clientX - theX)
+        console.log(angle)
+        playerRef.current.rotate = angle;
      }
 
      const stopMove = (e) =>{
@@ -163,6 +185,7 @@ function Game({charcter}){
          canvas.addEventListener("click", bulletlistener);
          window.addEventListener('keydown',move);
          window.addEventListener('keyup',stopMove);
+         window.addEventListener('mousemove',rotation);
          fillCanvas();
          animate();
         
