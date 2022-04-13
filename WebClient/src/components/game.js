@@ -110,8 +110,12 @@ function Game({charcter}){
             playerRef.current.velocity.y = 0;
            // playerRef.current.rotate = 0;
         }
-        bullet.current.forEach((bul) => {
-          bul.update();
+        bullet.current.forEach((bul,index) => { //update bullet position and delete out of range bullets
+          if(bul.x+bul.radius > canvas.width || bul.x+bul.radius < 0 || bul.y+bul.radius <0 || bul.y+bul.radius > canvas.height){
+               bullet.current.splice(index,1);
+          }else{
+            bul.update();
+          }
          
         })
 
@@ -132,8 +136,9 @@ function Game({charcter}){
              x:Math.cos(angle),
              y:Math.sin(angle)
          }
-        console.log(bullet.current);
-         bullet.current = [...bullet.current,new Bullet(theX,theY,4,velocity)];
+         //bullet.current = [...bullet.current,new Bullet(theX,theY,4,velocity)];
+         bullet.current.push(new Bullet(theX,theY,4,velocity))
+         console.log(bullet.current);
         
      }
 
@@ -152,7 +157,6 @@ function Game({charcter}){
         const theX = playerRef.current.position.x+72;
         const theY =  playerRef.current.position.y+60;
         const angle = Math.atan2(e.clientY - theY,e.clientX - theX)
-        console.log(angle)
         playerRef.current.rotate = angle;
      }
 
@@ -172,7 +176,7 @@ function Game({charcter}){
      }
 
 
-    useEffect(()=>{
+    useEffect(()=>{ //when the canvas onload 
          const Theplayer = new Player(); 
          Theplayer.create();
          setPlayer(Theplayer);
