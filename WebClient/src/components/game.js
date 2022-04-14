@@ -4,83 +4,89 @@ import TeamA from '../image/survivor-shoot_rifle_2.png'
 import TeamB from '../image/survivor-shoot_shotgun_2.png'
 
 
-class Player{
+
+function Game({charcter,Socket,playerId}){
+   const teamA = new Image();
+   teamA.src = TeamA; 
+
+    class Player{
     
-    constructor(){
-       this.position = {x:0,y:0}
-       this.velocity = {x:0,y:0}
-       this.size = 80
-       this.rotate =0
-       this.image = new Image();
+        constructor(){
+           this.position = {x:0,y:0}
+           this.velocity = {x:0,y:0}
+           this.size = 80
+           this.rotate =0
+           this.image = new Image();
+        }
+        create(){
+            let img = this.image;
+            let canvas = document.getElementById('canvas')
+            let ctx = canvas.getContext('2d');
+             img.src = TeamA; 
+             img.onload = function() {
+                ctx.drawImage(img,0, window.innerHeight/2,80,80);
+                
+            };
+            this.position.x = 0;
+            this.position.y = window.innerHeight/2;
+        }
+    
+        draw(){
+            let canvas = document.getElementById('canvas')
+            let ctx = canvas.getContext('2d');
+            ctx.save();
+            ctx.translate(
+                this.position.x + this.size/2,
+                this.position.y + this.size/2
+            );
+            ctx.rotate(this.rotate)
+            ctx.translate(
+                -this.position.x - this.size/2,
+                -this.position.y - this.size/2
+            );
+    
+            ctx.drawImage(this.image,this.position.x, this.position.y,80,80);
+            ctx.restore();
+        }
+    
+        update(){
+            this.draw()
+            this.position.y += this.velocity.y
+        }
+    
+     
     }
-    create(){
-        let img = this.image;
-        let canvas = document.getElementById('canvas')
-        let ctx = canvas.getContext('2d');
-         img.src = TeamA; 
-         img.onload = function() {
-            ctx.drawImage(img,0, window.innerHeight/2,80,80);
+    
+    class Bullet{
+        constructor(x,y,radius,velocity){
+           this.x = x
+           this.y = y
+           this.radius = radius
+           this.velocity = velocity
+        }
+        draw(){
+            let canvas = document.getElementById('canvas')
+            let ctx = canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(this.x,this.y,this.radius,0,Math.PI*2,false);
+            ctx.fillStyle = 'black';
+            ctx.fill();
             
-        };
-        this.position.x = 0;
-        this.position.y = window.innerHeight/2;
-    }
-
-    draw(){
-        let canvas = document.getElementById('canvas')
-        let ctx = canvas.getContext('2d');
-        ctx.save();
-        ctx.translate(
-            this.position.x + this.size/2,
-            this.position.y + this.size/2
-        );
-        ctx.rotate(this.rotate)
-        ctx.translate(
-            -this.position.x - this.size/2,
-            -this.position.y - this.size/2
-        );
-
-        ctx.drawImage(this.image,this.position.x, this.position.y,80,80);
-        ctx.restore();
-    }
-
-    update(){
-        this.draw()
-        this.position.y += this.velocity.y
-    }
- 
-}
-
-class Bullet{
-    constructor(x,y,radius,velocity){
-       this.x = x
-       this.y = y
-       this.radius = radius
-       this.velocity = velocity
-    }
-    draw(){
-        let canvas = document.getElementById('canvas')
-        let ctx = canvas.getContext('2d');
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,this.radius,0,Math.PI*2,false);
-        ctx.fillStyle = 'black';
-        ctx.fill();
-        
-    }
-
-    update(){
-        
-        this.draw();
-        this.x += this.velocity.x*7
-        this.y += this.velocity.y*7
-    }
-}
-function Game({charcter}){
+        }
     
+        update(){
+            
+            this.draw();
+            this.x += this.velocity.x*7
+            this.y += this.velocity.y*7
+        }
+    }
+
     const [player,setPlayer] = useState({});
     //const [bullet,setBullet] = useState([]);
     const bullet = useRef([]);
     const playerRef = useRef(null);
+    const enemyRef = useRef([]);
     const keys = useRef({
         w:{
             pressed:false
@@ -96,14 +102,28 @@ function Game({charcter}){
         requestAnimationFrame(animate);
         ctx.clearRect(0,0,canvas.width,canvas.height);
         fillCanvas();
+        //players actions
         playerRef.current.update();
+        enemyRef.current.forEach((enemy) =>{
+            ctx.save();
+            ctx.translate(
+                enemy.position.x + enemy.size/2,
+                enemy.position.y + enemy.size/2
+            );
+            ctx.rotate(enemy.rotate)
+            ctx.translate(
+                -enemy.position.x - enemy.size/2,
+                -enemy.position.y - enemy.size/2
+            );
+    
+            ctx.drawImage(teamA,enemy.position.x, enemy.position.y,80,80);
+            ctx.restore();
+            
+        })
         if(keys.current.w.pressed && playerRef.current.position.y >= 0){
-            console.log(playerRef.current.position.y)
             playerRef.current.velocity.y = -2;
             //playerRef.current.rotate = -0.15;
         }else if(keys.current.s.pressed && playerRef.current.position.y+playerRef.current.size <= canvas.height){
-            console.log(playerRef.current.position.y)
-            console.log(`canvas ${canvas.height}`);
             playerRef.current.velocity.y = 2;
             //playerRef.current.rotate = 0.15;
         }else{
@@ -131,7 +151,7 @@ function Game({charcter}){
          const theX = playerRef.current.position.x+72;
          const theY =  playerRef.current.position.y+60;
          const angle = Math.atan2(e.clientY - theY,e.clientX - theX)
-         console.log(angle)
+         //console.log(angle)
          const velocity = {
              x:Math.cos(angle),
              y:Math.sin(angle)
@@ -142,7 +162,7 @@ function Game({charcter}){
         
      }
 
-     const move = (e) =>{
+     const move = (e) =>{ //control movement
         switch(e.key){
           case 'w':
               keys.current.w.pressed = true;
@@ -175,13 +195,27 @@ function Game({charcter}){
         }
      }
 
+     const spawnUpdate = async () => {
+        await Socket.emit("newPlayer",playerRef.current);
+        Socket.on("updatePlayers", (data) => {
+            for(let player in data){
+               if(player !== Socket.id){
+                   enemyRef.current.push(data[player])
+               }
+            }
+            console.log(enemyRef.current) 
+        });
+     }
+
 
     useEffect(()=>{ //when the canvas onload 
+        console.log(playerId)
          const Theplayer = new Player(); 
          Theplayer.create();
          setPlayer(Theplayer);
          playerRef.current =  Theplayer
-         //const thebullet = new Bullet(Theplayer.x,Theplayer.y,4,{x:1,y:1});
+         console.log(playerRef.current);
+         spawnUpdate();
          const canvas = document.getElementById('canvas')
          canvas.width = window.innerWidth;
          canvas.height = window.innerHeight;
@@ -191,13 +225,24 @@ function Game({charcter}){
          window.addEventListener('keyup',stopMove);
          window.addEventListener('mousemove',rotation);
          fillCanvas();
-         animate();
-        
-
+         teamA.onload = function(){
+            animate();
+         }
     },[])
+
+    useEffect(() => {
+        console.log(Socket)
+        Socket.on("updatePlayers", (data) => {
+            for(let player in data){
+               if(player !== Socket.id){
+                   enemyRef.current.push(data[player])
+               }
+            }
+            console.log(enemyRef.current.image) 
+        });
+    }, [Socket]); //listen to Socket change 
     
 
-  
     return( 
     <canvas id="canvas">
      

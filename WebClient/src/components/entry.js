@@ -2,17 +2,23 @@ import '../App.css';
 import bgVideo from '../video/bgVideo.mp4'
 import awp from '../image/awp.png'
 import io, { Socket } from "socket.io-client";
-import React, { useState } from "react";
 import {Link} from 'react-router-dom';
 import Background from './background';
 import Game from './game';
+import React, { useEffect, useState,useRef } from "react";
 
-function Entry({Socket,username,setUsername}) {
+function Entry({Socket,username,setUsername,setPlayerId}) {
   
   const joinChat = () =>{
        Socket.emit("join_room",username);
+       Socket.emit("requestID",username);
+       Socket.on("sendID", (data) => {
+        setPlayerId(data)
+    });
       // window.location.href='/chat'; 
   }
+
+
   return (
     <React.Fragment>
      <header>

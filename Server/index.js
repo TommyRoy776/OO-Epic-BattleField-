@@ -12,21 +12,38 @@ const io = new Server(server, {    //init Socket.IO server
     },
 });
 
+const players = {};
+let socketNum = 0;
+
 io.on("connection", //listen on the connection event
     (socket) => {
         console.log(`Socket: ${socket.id}`);
-
+        socketNum ++;
+        socket.on("requestID",()=>{
+            socket.emit("sendID",socketNum);
+        })
         socket.on("join_room", (data) => {
             socket.join("room"); //room means subset channels of the server
-            console.log(`${socket.id} User ${data}  joined`);
+            //console.log(`${socket.id} User ${data}  joined`);
         })
 
         socket.on("send_message", (data) => {
             socket.to(data.room).emit("receive_message", data);
           });
 
+        socket.on("newPlayer",(data) =>{
+            players[socket.id] = data;
+            console.log("Starting position: "+players[socket.id].position.x+" , "+players[socket.id].position.y);
+            console.log("Current number of players: "+Object.keys(players).length);
+            socket.to("room").emit("updatePlayers", players);
+        })
+
+
+
         socket.on("disconnect", () => {
             console.log("User disconnected", socket.id)
+            delete players[socket.id];
+            console.log(players)
         })
     });
 

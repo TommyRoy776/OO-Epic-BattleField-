@@ -17,14 +17,17 @@ import React, {useState,useEffect} from "react";
 function App() {
   const [socket, setSocket] = useState();
   const [username, setUsername] = useState("");
+  const [playerId, setPlayerId] = useState(0);
+
   useEffect(() => {setSocket(io.connect(`http://${window.location.hostname}:3001`));console.log(window.location.hostname)},[])
+
   return (
   <Router>
     <div className="App">
       <Routes>
-        <Route exact path='/' element={<Entry Socket={socket} username={username} setUsername={setUsername}/>}></Route>
+        <Route exact path='/' element={<Entry Socket={socket} username={username} setUsername={setUsername} setPlayerId={setPlayerId}/>}></Route>
         <Route exact path='/chat' element={<Chat username={username} Socket={socket} />}></Route>
-        <Route exact path='/game' element={<Game/>}></Route>
+        <Route exact path='/game' element={<Game playerId={playerId} username={username} Socket={socket}/>}></Route>
       </Routes>
     </div>
     </Router>
