@@ -86,7 +86,8 @@ function Game({charcter,Socket,playerId}){
     //const [bullet,setBullet] = useState([]);
     const bullet = useRef([]);
     const playerRef = useRef(null);
-    const enemyRef = useRef([]);
+    const enemyRef = useRef(null);
+    const enemyBulletRef = useRef([]);
     const keys = useRef({
         w:{
             pressed:false
@@ -95,6 +96,37 @@ function Game({charcter,Socket,playerId}){
             pressed:false
         }
     })
+
+    const drawEnemy = (enemy) =>{
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.translate(
+            enemy.position.x + enemy.size/2,
+            enemy.position.y + enemy.size/2
+        );
+        ctx.rotate(enemy.rotate)
+        ctx.translate(
+            -enemy.position.x - enemy.size/2,
+            -enemy.position.y - enemy.size/2
+        );
+
+        ctx.drawImage(teamA,enemy.position.x, enemy.position.y,80,80);
+        ctx.restore();
+        
+    }
+
+
+    const drawEnemyBullet = (bul) =>{
+        let canvas = document.getElementById('canvas')
+        let ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.arc(bul.x,bul.y,bul.radius,0,Math.PI*2,false);
+        ctx.fillStyle = 'black';
+        ctx.fill();
+    }
+
+
    
     const animate = () =>{
         const canvas = document.getElementById('canvas');
@@ -104,22 +136,10 @@ function Game({charcter,Socket,playerId}){
         fillCanvas();
         //players actions
         playerRef.current.update();
-        enemyRef.current.forEach((enemy) =>{
-            ctx.save();
-            ctx.translate(
-                enemy.position.x + enemy.size/2,
-                enemy.position.y + enemy.size/2
-            );
-            ctx.rotate(enemy.rotate)
-            ctx.translate(
-                -enemy.position.x - enemy.size/2,
-                -enemy.position.y - enemy.size/2
-            );
-    
-            ctx.drawImage(teamA,enemy.position.x, enemy.position.y,80,80);
-            ctx.restore();
-            
-        })
+        if(enemyRef.current !== null){
+            drawEnemy(enemyRef.current);
+        }
+      
         if(keys.current.w.pressed && playerRef.current.position.y >= 0){
             playerRef.current.velocity.y = -2;
             //playerRef.current.rotate = -0.15;
@@ -130,12 +150,19 @@ function Game({charcter,Socket,playerId}){
             playerRef.current.velocity.y = 0;
            // playerRef.current.rotate = 0;
         }
+
+        Socket.emit('playerUpdate', playerRef.current)
         bullet.current.forEach((bul,index) => { //update bullet position and delete out of range bullets
           if(bul.x+bul.radius > canvas.width || bul.x+bul.radius < 0 || bul.y+bul.radius <0 || bul.y+bul.radius > canvas.height){
                bullet.current.splice(index,1);
           }else{
             bul.update();
           }
+
+          enemyBulletRef.current.forEach((bul,index)=>{
+            drawEnemyBullet(bul);
+          })
+          Socket.emit('bulletUpdate',bullet.current);
          
         })
 
@@ -156,7 +183,6 @@ function Game({charcter,Socket,playerId}){
              x:Math.cos(angle),
              y:Math.sin(angle)
          }
-         //bullet.current = [...bullet.current,new Bullet(theX,theY,4,velocity)];
          bullet.current.push(new Bullet(theX,theY,4,velocity))
          console.log(bullet.current);
         
@@ -195,18 +221,7 @@ function Game({charcter,Socket,playerId}){
         }
      }
 
-     const spawnUpdate = async () => {
-        await Socket.emit("newPlayer",playerRef.current);
-        Socket.on("updatePlayers", (data) => {
-            for(let player in data){
-               if(player !== Socket.id){
-                   enemyRef.current.push(data[player])
-               }
-            }
-            console.log(enemyRef.current) 
-        });
-     }
-
+     
 
     useEffect(()=>{ //when the canvas onload 
         console.log(playerId)
@@ -215,7 +230,16 @@ function Game({charcter,Socket,playerId}){
          setPlayer(Theplayer);
          playerRef.current =  Theplayer
          console.log(playerRef.current);
-         spawnUpdate();
+         Socket.emit("newPlayer",playerRef.current);
+         Socket.on("updatePlayers", (data) => {
+            console.log("update")
+            for(let player in data){
+               if(player !== Socket.id){
+                   enemyRef.current = data[player]
+               }
+            }
+            drawEnemy(enemyRef.current)
+        });
          const canvas = document.getElementById('canvas')
          canvas.width = window.innerWidth;
          canvas.height = window.innerHeight;
@@ -230,16 +254,19 @@ function Game({charcter,Socket,playerId}){
          }
     },[])
 
+  
+ 
+
     useEffect(() => {
-        console.log(Socket)
-        Socket.on("updatePlayers", (data) => {
+        Socket.on("playermoved",(data)=>{
+            console.log("moving")
             for(let player in data){
                if(player !== Socket.id){
-                   enemyRef.current.push(data[player])
+                   enemyRef.current = data[player]
                }
             }
-            console.log(enemyRef.current.image) 
-        });
+        })
+      
     }, [Socket]); //listen to Socket change 
     
 

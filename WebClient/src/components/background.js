@@ -7,7 +7,7 @@ import React, { useEffect, useState,useRef } from "react";
 function Background(){
    return(
         <div className="video-container">
-          <iframe src={bgm} type="audio/mp3" allow="autoplay" id="audio" style={{display:'none'}}></iframe>
+         
         <div className="color-overlay"></div>
         <video autoPlay loop muted>
           <source src={bgVideo} type="video/mp4" />
