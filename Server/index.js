@@ -45,9 +45,12 @@ io.on("connection", //listen on the connection event
         })
          
         socket.on("bulletUpdate",(data)=>{
-            players[socket.id] = data;
-          
-            socket.to("room").emit("bulletmoved", players);
+            io.emit("bulletmoved", data);
+        })
+
+        socket.on("bulletRemove",(data) =>{
+            console.log(`removeing bullet`)
+            io.emit("bulletRemoved", data);
         })
 
 

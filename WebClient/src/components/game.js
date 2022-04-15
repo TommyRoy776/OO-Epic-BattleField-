@@ -58,11 +58,12 @@ function Game({charcter,Socket,playerId}){
     }
     
     class Bullet{
-        constructor(x,y,radius,velocity){
+        constructor(x,y,radius,velocity,socket){
            this.x = x
            this.y = y
            this.radius = radius
            this.velocity = velocity
+           this.socket = socket
         }
         draw(){
             let canvas = document.getElementById('canvas')
@@ -87,7 +88,6 @@ function Game({charcter,Socket,playerId}){
     const bullet = useRef([]);
     const playerRef = useRef(null);
     const enemyRef = useRef(null);
-    const enemyBulletRef = useRef([]);
     const keys = useRef({
         w:{
             pressed:false
@@ -124,6 +124,8 @@ function Game({charcter,Socket,playerId}){
         ctx.arc(bul.x,bul.y,bul.radius,0,Math.PI*2,false);
         ctx.fillStyle = 'black';
         ctx.fill();
+        bul.x += bul.velocity.x*7
+        bul.y += bul.velocity.y*7
     }
 
 
@@ -153,16 +155,16 @@ function Game({charcter,Socket,playerId}){
 
         Socket.emit('playerUpdate', playerRef.current)
         bullet.current.forEach((bul,index) => { //update bullet position and delete out of range bullets
+            const dist = Math.hypot(bul.x - playerRef.current.position.x,bul.y - playerRef.current.position.y)
           if(bul.x+bul.radius > canvas.width || bul.x+bul.radius < 0 || bul.y+bul.radius <0 || bul.y+bul.radius > canvas.height){
                bullet.current.splice(index,1);
-          }else{
-            bul.update();
-          }
+          }if(dist - bul.radius - playerRef.current.size/2 < 1){
+              console.log("hit")
+              Socket.emit("bulletRemove",index)
 
-          enemyBulletRef.current.forEach((bul,index)=>{
+          }else{
             drawEnemyBullet(bul);
-          })
-          Socket.emit('bulletUpdate',bullet.current);
+          }
          
         })
 
@@ -183,7 +185,8 @@ function Game({charcter,Socket,playerId}){
              x:Math.cos(angle),
              y:Math.sin(angle)
          }
-         bullet.current.push(new Bullet(theX,theY,4,velocity))
+        // bullet.current.push(new Bullet(theX,theY,4,velocity))
+         Socket.emit('bulletUpdate',new Bullet(theX,theY,4,velocity,Socket.id));
          console.log(bullet.current);
         
      }
@@ -269,6 +272,19 @@ function Game({charcter,Socket,playerId}){
       
     }, [Socket]); //listen to Socket change 
     
+    useEffect(() => {
+        Socket.on("bulletmoved",(data)=>{
+            bullet.current.push(data)
+        })
+      
+    }, [Socket]); //listen to Socket change 
+
+    useEffect(() => {
+        Socket.on("bulletRemoved",(data)=>{
+            bullet.current.splice(data,1);
+        })
+      
+    }, [Socket]); //listen to Socket change 
 
     return( 
     <canvas id="canvas">
