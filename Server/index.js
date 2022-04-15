@@ -38,6 +38,18 @@ io.on("connection", //listen on the connection event
             socket.to("room").emit("updatePlayers", players);
         })
 
+        socket.on("playerUpdate",(data)=>{
+            players[socket.id] = data;
+            //console.log(`${socket.id} moving`)
+            socket.to("room").emit("playermoved", players);
+        })
+         
+        socket.on("bulletUpdate",(data)=>{
+            players[socket.id] = data;
+          
+            socket.to("room").emit("bulletmoved", players);
+        })
+
 
 
         socket.on("disconnect", () => {
