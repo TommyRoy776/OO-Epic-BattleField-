@@ -15,7 +15,7 @@ const io = new Server(server, {    //init Socket.IO server
 const players = {};
 let socketNum = 0;
 
-io.on("connection", //listen on the connection event
+io.on("connection", //Server listen on the connection event
     (socket) => {
         console.log(`Socket: ${socket.id}`);
         socketNum ++;
@@ -24,14 +24,14 @@ io.on("connection", //listen on the connection event
         })
         socket.on("join_room", (data) => {
             socket.join("room"); //room means subset channels of the server
-            //console.log(`${socket.id} User ${data}  joined`);
+            console.log(` User ${data}  joined`);
         })
 
         socket.on("send_message", (data) => {
             socket.to(data.room).emit("receive_message", data);
           });
 
-        socket.on("newPlayer",(data) =>{
+        socket.on("newPlayer",(data) =>{ //transmit new player info to everyone include the sender
             players[socket.id] = data;
             console.log("Starting position: "+players[socket.id].position.x+" , "+players[socket.id].position.y);
             console.log("Current number of players: "+Object.keys(players).length);
@@ -40,9 +40,8 @@ io.on("connection", //listen on the connection event
 
         })
 
-        socket.on("playerUpdate",(data)=>{
+        socket.on("playerUpdate",(data)=>{ //update enemy info
             players[socket.id] = data;
-            //console.log(`${socket.id} moving`)
             socket.to("room").emit("playermoved", players);
         })
          
@@ -51,7 +50,7 @@ io.on("connection", //listen on the connection event
         })
 
         socket.on("bulletRemove",(data) =>{
-            console.log(`removeing bullet`)
+            //console.log(`removeing bullet`)
             io.emit("bulletRemoved", data);
         })
          
