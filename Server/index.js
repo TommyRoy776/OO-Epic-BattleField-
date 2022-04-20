@@ -35,7 +35,9 @@ io.on("connection", //listen on the connection event
             players[socket.id] = data;
             console.log("Starting position: "+players[socket.id].position.x+" , "+players[socket.id].position.y);
             console.log("Current number of players: "+Object.keys(players).length);
-            socket.to("room").emit("updatePlayers", players);
+            //socket.to("room").emit("updatePlayers", players);
+            io.emit("updatePlayers", players);
+
         })
 
         socket.on("playerUpdate",(data)=>{
@@ -52,7 +54,10 @@ io.on("connection", //listen on the connection event
             console.log(`removeing bullet`)
             io.emit("bulletRemoved", data);
         })
-
+         
+        socket.on("hit", (data) =>{
+            io.emit("afterhit",data)
+        })
 
 
         socket.on("disconnect", () => {
