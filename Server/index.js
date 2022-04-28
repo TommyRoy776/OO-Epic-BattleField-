@@ -18,9 +18,8 @@ let socketNum = 0;
 io.on("connection", //Server listen on the connection event
     (socket) => {
         console.log(`Socket: ${socket.id}`);
-        socketNum ++;
         socket.on("requestID",()=>{
-            socket.emit("sendID",socketNum);
+            socket.emit("sendID",socketNum++);
         })
         socket.on("join_room", (data) => {
             socket.join("room"); //room means subset channels of the server

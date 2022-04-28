@@ -7,16 +7,15 @@ import Background from './background';
 import Game from './game';
 import React, { useEffect, useState,useRef } from "react";
 
-function Entry({Socket,username,setUsername,setPlayerId}) {
+function Entry({Socket,username,setUsername,playerId}) {
   
-  const joinChat = () =>{
+  const joinChat = async () =>{
        Socket.emit("join_room",username);
-       Socket.emit("requestID",username);
-       Socket.on("sendID", (data) => {
-        setPlayerId(data)
-    });
+       console.log(`My player id ${playerId}`)
+    
       // window.location.href='/chat'; 
   }
+  
 
 
   return (
@@ -24,8 +23,11 @@ function Entry({Socket,username,setUsername,setPlayerId}) {
      <header>
       <h1>OO Epic BattleField</h1>
       <input type="text" placeholder='username' value={username} onChange={
-        (e) => {
+        async (e) => {
           setUsername(e.target.value);
+          await Socket.emit("requestID",username);
+          Socket.on("sendID", (data) => {
+         })       
          // console.log(username);
         }} />
         <Link to = { username !== "" ? "/game": "/"}  onClick={joinChat}>

@@ -7,7 +7,13 @@ import TeamB from '../image/survivor-shoot_shotgun_2.png'
 
 function Game({ charcter, Socket, playerId }) {
     const teamA = new Image();
-    teamA.src = TeamA;
+    console.log(`In game playerid ${playerId}`);
+    if(playerId % 2 === 0){
+        teamA.src = TeamA;
+    }else{
+        teamA.src = TeamB;
+    }
+    
 
     class Player {
 
@@ -184,7 +190,7 @@ function Game({ charcter, Socket, playerId }) {
             if (bul.x + bul.radius > canvas.width || bul.x + bul.radius < 0 || bul.y + bul.radius < 0 || bul.y + bul.radius > canvas.height) {
                 bullet.current.splice(index, 1);
             } 
-            if (dist - bul.radius - playerRef.current.size / 2 < 1 ) {
+            if (dist - bul.radius - playerRef.current.size / 2 < 1 && bul.socket !== Socket.id) {
                 console.log("hit")
                 Socket.emit("bulletRemove", index)
                 Socket.emit("hit",Socket.id)
@@ -276,7 +282,6 @@ function Game({ charcter, Socket, playerId }) {
 
 
     useEffect(() => { //when the canvas loaded 
-        console.log(playerId)
         const Theplayer = new Player();
         Theplayer.create();
         playerRef.current = Theplayer
