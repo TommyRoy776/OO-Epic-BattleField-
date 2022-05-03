@@ -8,11 +8,8 @@ import TeamB from '../image/survivor-shoot_shotgun_2.png'
 function Game({ charcter, Socket, playerId }) {
     const teamA = new Image();
     console.log(`In game playerid ${playerId}`);
-    if(playerId % 2 === 0){
-        teamA.src = TeamA;
-    }else{
-        teamA.src = TeamB;
-    }
+    teamA.src = TeamA;
+ 
     
 
     class Player {

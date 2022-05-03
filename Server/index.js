@@ -61,6 +61,7 @@ io.on("connection", //Server listen on the connection event
         socket.on("disconnect", () => {
             console.log("User disconnected", socket.id)
             delete players[socket.id];
+            socketNum--;
             console.log(players)
         })
     });
